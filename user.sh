@@ -56,7 +56,7 @@ IFS=$'\n\t'
   # 整理 变量
   # ########## ######### ######### ######### ######### ######### ######### #####
 
-  read -r -d '' strBizKeyPublic <<'EOF' || true
+  read -r -d '' strBizKeyPublic << 'EOF' || true
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPwWyuNYd1wV/18aBJ8bWyf6aWTycOwpIpOj9BeL+CZO yemaomiaomiao@163.com
 EOF
 
@@ -76,7 +76,7 @@ EOF
 
     strBizUserGroupCurrent="${arrCmdArgFmd['group']:-${arrCmdArgFmd['name']:-${strBizUserGroup}}}"
 
-    if ! (getent group "${strBizUserGroupCurrent}" >/dev/null 2>&1); then
+    if ! (getent group "${strBizUserGroupCurrent}" > /dev/null 2>&1); then
       fun_log "${INT_ERR_SYS_TRUE}" "本系统 ${strBizUserGroupCurrent} 组名可新增."
 
       return "${INT_ERR_SYS_OK}"
@@ -94,9 +94,9 @@ EOF
     declare strOsVersionIdMajor=''
     declare -i intErrSysCode="${INT_ERR_SYS_TRUE}"
 
-    strOsId=$(grep '^ID=' /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"' | tr -d "'")
+    strOsId=$(grep '^ID=' /etc/os-release 2> /dev/null | cut -d= -f2 | tr -d '"' | tr -d "'")
     strOsId=${strOsId:-UnknownOsId}
-    strOsVersionId=$(grep '^VERSION_ID=' /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"' | tr -d "'")
+    strOsVersionId=$(grep '^VERSION_ID=' /etc/os-release 2> /dev/null | cut -d= -f2 | tr -d '"' | tr -d "'")
     strOsVersionId=${strOsVersionId:-UnknownOsVersionId}
 
     strOsVersionIdMajor="${strOsVersionId%%.*}"
@@ -137,7 +137,7 @@ EOF
   }
 
   fun_biz_user_check_privilege() {
-    if sudo -n -v >/dev/null 2>&1; then
+    if sudo -n -v > /dev/null 2>&1; then
       fun_log "${INT_ERR_SYS_TRUE}" '本脚本 MUST 提前激活 sudo 权限以静默运行.'
 
       return "${INT_ERR_SYS_OK}"
@@ -168,7 +168,7 @@ EOF
 
     strBizUserNameCurrent="${arrCmdArgFmd['name']:-${strBizUserName}}"
 
-    if ! (id "${strBizUserNameCurrent}" >/dev/null 2>&1); then
+    if ! (id "${strBizUserNameCurrent}" > /dev/null 2>&1); then
       fun_log "${INT_ERR_SYS_TRUE}" "本系统 ${strBizUserNameCurrent} 用户可新增."
 
       return "${INT_ERR_SYS_OK}"
@@ -210,13 +210,13 @@ EOF
     sudo mkdir -p "${strBizKeyDir}"
     sudo chmod 700 "${strBizKeyDir}"
 
-    if sudo grep -qF -- "${strBizKeyContentCurrent}" "${strBizKeyFile}" 2>/dev/null; then
+    if sudo grep -qF -- "${strBizKeyContentCurrent}" "${strBizKeyFile}" 2> /dev/null; then
       fun_log "${INT_ERR_SYS_WARN}" '该用户 SSH 公钥内容已存在.'
 
       return "${INT_ERR_SYS_WARN}"
     fi
 
-    sudo tee -a "${strBizKeyFile}" >/dev/null <<< "${strBizKeyContentCurrent}"
+    sudo tee -a "${strBizKeyFile}" > /dev/null <<< "${strBizKeyContentCurrent}"
     sudo chmod 600 "${strBizKeyFile}"
 
     sudo chown -R "${strBizUserNameCurrent}:${strBizUserNameCurrent}" "${strBizKeyDir}"
@@ -238,13 +238,13 @@ EOF
     strBizUserNameCurrent="${arrCmdArgFmd['name']:-${strBizUserName}}"
     strBizUserPasswordCurrent="${STR_BIZ_PASSWORD_PFX}${strBizUserNameCurrent}"
 
-    ! (id "${strBizUserNameCurrent}" >/dev/null 2>&1) || {
+    ! (id "${strBizUserNameCurrent}" > /dev/null 2>&1) || {
       fun_log "${INT_ERR_SYS_WARN}" "本脚本 ${strBizUserNameCurrent} 用户已跳过."
 
       return "${INT_ERR_SYS_WARN}"
     }
 
-    getent group "${strBizUserGroupCurrent}" >/dev/null 2>&1 || {
+    getent group "${strBizUserGroupCurrent}" > /dev/null 2>&1 || {
       sudo groupadd "${strBizUserGroupCurrent}"
     }
 
@@ -409,7 +409,7 @@ EOF
     declare strEnvBashSource="${BASH_SOURCE[0]}"
     declare strTxtHelp=''
 
-    read -r -d '' strTxtHelp <<'EOF' || true
+    read -r -d '' strTxtHelp << 'EOF' || true
 Usage:
   ____STR_SYS_BASH_SOURCE____ [OPTION] [ARGUMENT]
 
@@ -448,7 +448,7 @@ EOF
   fun_biz_user_show_version() {
     declare strTxtVersion=''
 
-    read -r -d '' strTxtVersion <<'EOF' || true
+    read -r -d '' strTxtVersion << 'EOF' || true
 ____STR_BIZ_SCRIPT_VERSION____
 EOF
 
@@ -516,7 +516,7 @@ EOF
     declare key=''
     declare strVarAttr=''
 
-    strVarAttr="$(declare -p "${!mxdIptVarSource}" 2>/dev/null)"
+    strVarAttr="$(declare -p "${!mxdIptVarSource}" 2> /dev/null)"
 
     if [[ "${strVarAttr}" == "declare -A"* ]]; then
       mxdIptVarTarget=()
@@ -555,7 +555,7 @@ EOF
     declare -a arrEnvCommandMissed=()
 
     for strEnvCommand in "${ARR_ENV_COMMAND_DEPENDENT[@]}"; do
-      command -v "${strEnvCommand}" >/dev/null 2>&1 || arrEnvCommandMissed+=("${strEnvCommand}")
+      command -v "${strEnvCommand}" > /dev/null 2>&1 || arrEnvCommandMissed+=("${strEnvCommand}")
     done
 
     [[ ${#arrEnvCommandMissed[@]} -eq 0 ]] || {
@@ -588,10 +588,10 @@ EOF
     local strNrfLog=''
     local -a arrPssLogMsgPrm=()
 
-    read -r -d '' strTipLogMsgValidateCodeRange <<'EOF' || true
+    read -r -d '' strTipLogMsgValidateCodeRange << 'EOF' || true
 The code MUST be greater than or equal to 0, and less than or equal to 255, but %s was provided.
 EOF
-    read -r -d '' strTipLogMsgValidatePrmNumber <<'EOF' || true
+    read -r -d '' strTipLogMsgValidatePrmNumber << 'EOF' || true
 The number of input parameters MUST be %d, but %d were provided.
 EOF
 
